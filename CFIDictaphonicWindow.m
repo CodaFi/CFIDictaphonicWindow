@@ -65,7 +65,7 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 }
 
 - (NSRect) firstRectForCharacterRange:(NSRange)theRange actualRange:(NSRangePointer)actualRange{
-	NSRect rect = [self convertRect:NSMakeRect(7.0f * theRange.location, 0, 7.0f * theRange.length, 20.0f) toView:nil];
+	NSRect rect = [self convertRect:NSZeroRect toView:nil];
 	rect.origin = [[self window] convertBaseToScreen:rect.origin];
 	return rect;
 }
@@ -80,6 +80,7 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 
 - (void)keyDown:(NSEvent *)theEvent {
 	//Do nothing, only inputs should be from Dictation
+	NSLog(@"%lu", (unsigned long)theEvent.modifierFlags);
 }
 
 
@@ -140,7 +141,7 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 	[[[self contentView] superview] addSubview:self.dummyField];
 	
 	[[NSNotificationCenter defaultCenter] addObserverForName:CFIDictaphonicTextDidChange object:self.dummyField queue:[NSOperationQueue currentQueue] usingBlock: ^(NSNotification *note) {
-		[self _handleCommand:note.userInfo[@"Command"]];
+		[self handleCommand:note.userInfo[@"Command"]];
 	}];
 }
 
@@ -151,16 +152,16 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 #pragma mark - NSResponder Intercepting
 
 - (BOOL) makeFirstResponder:(NSResponder *)aResponder {
-	[self _delayedCheckResponders];
+	[self delayedCheckResponders];
 	return [super makeFirstResponder:aResponder];
 }
 
-- (void) _delayedCheckResponders {
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_checkResponders) object:nil];
-	[self performSelector:@selector(_checkResponders) withObject:nil afterDelay:0];
+- (void) delayedCheckResponders {
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(checkResponders) object:nil];
+	[self performSelector:@selector(checkResponders) withObject:nil afterDelay:0];
 }
 
-- (void) _checkResponders {
+- (void) checkResponders {
 	if ([self.firstResponder isKindOfClass:[self class]]) {
 		self.dummyField.refusesFirstResponder = NO;
 		[self makeFirstResponder:self.dummyField];
@@ -175,7 +176,7 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 
 #pragma mark - Command Handling
 
-- (void) _handleCommand:(NSString*)command {
+- (void) handleCommand:(NSString*)command {
 	void (^commandBlock)(NSString *commandStr) = [self.commandMap objectForKey:command.lowercaseString];
 	if (commandBlock != nil) {
 		commandBlock(command);
@@ -198,6 +199,51 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 	NSRect innerFrame = [[self contentView] frame];
 	
 	return outerFrame.size.height - innerFrame.size.height;
+}
+
+/***************************************UNSAFE*****************************************************/
+//1048584, -1048585 - Two Left CMD presses; 1048576, -1048577 - Two CMD presses; 8388608, -8388609 - Two Fn presses; 1048592, -1048593 - Two Right CMD presses
+- (void)forceDictation {
+	
+//	NSString *path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]stringByAppendingPathComponent:@"Preferences/com.apple.symbolichotkeys.plist"];
+//	NSDictionary *dictationPrefs = [NSDictionary dictionaryWithContentsOfFile:path];
+//	NSDictionary *dictationDict = dictationPrefs[@"AppleSymbolicHotKeys"];
+//	NSDictionary *keyvalueDict = dictationDict[@"164"];
+//	NSDictionary *valueDict = keyvalueDict[@"value"];
+//	NSArray *parameters = valueDict[@"parameters"];
+//	NSInteger firstCode = [[parameters objectAtIndex:0]longLongValue];
+//	NSInteger secondCode = [[parameters objectAtIndex:0]longLongValue];
+//	CGKeyCode code = 0;
+//	switch (firstCode) {
+//		case 1048592:
+//			code = 134;
+//			break;
+//		case 1048584:
+//			code = 55;
+//			break;
+//		case 1048576:
+//			code = 55;
+//			break;
+//		case 8388608:
+//			code = 0x3F;
+//			break;
+//		default:
+//			break;
+//	}
+//	CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
+//	CGEventRef saveCommandDown = CGEventCreateKeyboardEvent(source, firstCode, YES);
+////	CGEventSetFlags(saveCommandDown, kCGEventFlagMaskCommand);
+//	CGEventRef saveCommandUp = CGEventCreateKeyboardEvent(source, secondCode, NO);
+//	
+//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandDown);
+//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandUp);
+//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandDown);
+//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandUp);
+//
+//	CFRelease(saveCommandUp);
+//	CFRelease(saveCommandDown);
+//	CFRelease(source);
+//	
 }
 
 

@@ -49,5 +49,6 @@ extern NSString *const CFIDictaphonicWindowDidNotRecognizeCommand;
  * @param command The command associated with the given command block.
  */
 - (void)enqueueBlock:(void(^)(NSString *command))commandBlock forCommand:(NSString*)command;
+- (void)forceDictation DEPRECATED_ATTRIBUTE;
 
 @end
