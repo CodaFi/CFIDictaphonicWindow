@@ -8,6 +8,9 @@
 
 #import "CFIDictaphonicWindow.h"
 
+#define START_BITMASK_SWITCH(x) \
+for (uint64_t bit = 1; x >= bit; bit *= 2) if (x & bit) switch (bit)
+
 NSString *const CFIDictaphonicWindowCanStartDictation = @"CFIDictaphonicWindowCanStartDictation";
 NSString *const CFIDictaphonicWindowDidMakeDictationFieldResign = @"CFIDictaphonicWindowDidMakeDictationFieldResign";
 NSString *const CFIDictaphonicWindowDidRecognizeCommand = @"CFIDictaphonicWindowDidRecognizeCommand";
@@ -113,6 +116,7 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 - (id)init {
 	self = [super init];
 	self.commandMap = @{}.mutableCopy;
+	[self awakeFromNib];
 	return self;
 }
 
@@ -125,12 +129,14 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag {
 	self = [super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag];
 	self.commandMap = @{}.mutableCopy;
+	[self awakeFromNib];
 	return self;
 }
 
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag screen:(NSScreen *)screen {
 	self = [super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag screen:screen];
 	self.commandMap = @{}.mutableCopy;
+	[self awakeFromNib];
 	return self;
 }
 
@@ -205,45 +211,34 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 //1048584, -1048585 - Two Left CMD presses; 1048576, -1048577 - Two CMD presses; 8388608, -8388609 - Two Fn presses; 1048592, -1048593 - Two Right CMD presses
 - (void)forceDictation {
 	
-//	NSString *path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]stringByAppendingPathComponent:@"Preferences/com.apple.symbolichotkeys.plist"];
-//	NSDictionary *dictationPrefs = [NSDictionary dictionaryWithContentsOfFile:path];
-//	NSDictionary *dictationDict = dictationPrefs[@"AppleSymbolicHotKeys"];
-//	NSDictionary *keyvalueDict = dictationDict[@"164"];
-//	NSDictionary *valueDict = keyvalueDict[@"value"];
-//	NSArray *parameters = valueDict[@"parameters"];
-//	NSInteger firstCode = [[parameters objectAtIndex:0]longLongValue];
-//	NSInteger secondCode = [[parameters objectAtIndex:0]longLongValue];
-//	CGKeyCode code = 0;
-//	switch (firstCode) {
-//		case 1048592:
-//			code = 134;
-//			break;
-//		case 1048584:
-//			code = 55;
-//			break;
-//		case 1048576:
-//			code = 55;
-//			break;
-//		case 8388608:
-//			code = 0x3F;
-//			break;
-//		default:
-//			break;
-//	}
+	NSString *path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]stringByAppendingPathComponent:@"Preferences/com.apple.symbolichotkeys.plist"];
+	NSDictionary *dictationPrefs = [NSDictionary dictionaryWithContentsOfFile:path];
+	NSDictionary *dictationDict = dictationPrefs[@"AppleSymbolicHotKeys"];
+	NSDictionary *keyvalueDict = dictationDict[@"164"];
+	NSDictionary *valueDict = keyvalueDict[@"value"];
+	NSArray *parameters = valueDict[@"parameters"];
+	NSInteger firstCode = [[parameters objectAtIndex:0]longLongValue];
+	NSInteger secondCode = [[parameters objectAtIndex:0]longLongValue];
+	CFDataRef data = CFDataCreate(NULL, &firstCode, 8);
+	CGEventRef event = CGEventCreateFromData(NULL, data);
+	
+	CFDataRef secondData = CFDataCreate(NULL, &secondCode, 8);
+	CGEventRef eventUp = CGEventCreateFromData(NULL, data);
 //	CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
-//	CGEventRef saveCommandDown = CGEventCreateKeyboardEvent(source, firstCode, YES);
-////	CGEventSetFlags(saveCommandDown, kCGEventFlagMaskCommand);
-//	CGEventRef saveCommandUp = CGEventCreateKeyboardEvent(source, secondCode, NO);
-//	
-//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandDown);
-//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandUp);
-//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandDown);
-//	CGEventPost(kCGAnnotatedSessionEventTap, saveCommandUp);
-//
+//	CGEventRef saveCommandDown = CGEventCreateKeyboardEvent(source, kCGEventNull, YES);
+//	CGEventSetFlags(saveCommandDown, firstCode);
+//	CGEventRef saveCommandUp = CGEventCreateKeyboardEvent(source, kCGEventNull, NO);
+//	CGEventSetFlags(saveCommandUp, secondCode);
+
+	CGEventPost(kCGAnnotatedSessionEventTap, event);
+	CGEventPost(kCGAnnotatedSessionEventTap, eventUp);
+	CGEventPost(kCGAnnotatedSessionEventTap, event);
+	CGEventPost(kCGAnnotatedSessionEventTap, eventUp);
+
 //	CFRelease(saveCommandUp);
 //	CFRelease(saveCommandDown);
 //	CFRelease(source);
-//	
+	
 }
 
 
