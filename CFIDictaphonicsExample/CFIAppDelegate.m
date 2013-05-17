@@ -43,7 +43,7 @@
 
 -(IBAction)resignResponders:(id)sender {
 	[self.window makeFirstResponder:nil];
-//	[self.window forceDictation];
+	[self.window forceDictation];
 }
 
 - (void)doTextyStuff:(NSString*)command {

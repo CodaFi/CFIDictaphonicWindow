@@ -207,38 +207,9 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 	return outerFrame.size.height - innerFrame.size.height;
 }
 
-/***************************************UNSAFE*****************************************************/
-//1048584, -1048585 - Two Left CMD presses; 1048576, -1048577 - Two CMD presses; 8388608, -8388609 - Two Fn presses; 1048592, -1048593 - Two Right CMD presses
 - (void)forceDictation {
-	
-	NSString *path = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]stringByAppendingPathComponent:@"Preferences/com.apple.symbolichotkeys.plist"];
-	NSDictionary *dictationPrefs = [NSDictionary dictionaryWithContentsOfFile:path];
-	NSDictionary *dictationDict = dictationPrefs[@"AppleSymbolicHotKeys"];
-	NSDictionary *keyvalueDict = dictationDict[@"164"];
-	NSDictionary *valueDict = keyvalueDict[@"value"];
-	NSArray *parameters = valueDict[@"parameters"];
-	NSInteger firstCode = [[parameters objectAtIndex:0]longLongValue];
-	NSInteger secondCode = [[parameters objectAtIndex:0]longLongValue];
-	CFDataRef data = CFDataCreate(NULL, &firstCode, 8);
-	CGEventRef event = CGEventCreateFromData(NULL, data);
-	
-	CFDataRef secondData = CFDataCreate(NULL, &secondCode, 8);
-	CGEventRef eventUp = CGEventCreateFromData(NULL, data);
-//	CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
-//	CGEventRef saveCommandDown = CGEventCreateKeyboardEvent(source, kCGEventNull, YES);
-//	CGEventSetFlags(saveCommandDown, firstCode);
-//	CGEventRef saveCommandUp = CGEventCreateKeyboardEvent(source, kCGEventNull, NO);
-//	CGEventSetFlags(saveCommandUp, secondCode);
-
-	CGEventPost(kCGAnnotatedSessionEventTap, event);
-	CGEventPost(kCGAnnotatedSessionEventTap, eventUp);
-	CGEventPost(kCGAnnotatedSessionEventTap, event);
-	CGEventPost(kCGAnnotatedSessionEventTap, eventUp);
-
-//	CFRelease(saveCommandUp);
-//	CFRelease(saveCommandDown);
-//	CFRelease(source);
-	
+	[self makeFirstResponder:nil];
+	[NSApp  performSelector:@selector(startDictation:) withObject:self.dummyField afterDelay:0.2];
 }
 
 
