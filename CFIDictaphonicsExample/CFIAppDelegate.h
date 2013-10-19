@@ -6,17 +6,13 @@
 //  Copyright (c) 2013 CodaFi. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+@class					  CFIDictaphonicWindow ;
+@interface 								 CFIAppDelegate : NSObject <NSApplicationDelegate>
 
-@class CFIDictaphonicWindow;
+@property (assign) IBOutlet CFIDictaphonicWindow * window;
+@property (assign) IBOutlet 			 NSTextField * textField, 
+																 * statusField;
 
-@interface CFIAppDelegate : NSObject <NSApplicationDelegate>
-
-@property (assign) IBOutlet CFIDictaphonicWindow *window;
-@property (assign) IBOutlet NSTextField *textField;
-@property (assign) IBOutlet NSTextField *statusField;
-
-
--(IBAction)resignResponders:(id)sender;
+- (IBAction) resignResponders:(id)x;
 
 @end
