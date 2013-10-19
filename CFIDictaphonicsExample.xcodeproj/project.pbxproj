@@ -8,9 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		842DB1C416D69FDD00737D19 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 842DB1C316D69FDD00737D19 /* Cocoa.framework */; };
-		842DB1CE16D69FDD00737D19 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 842DB1CC16D69FDD00737D19 /* InfoPlist.strings */; };
-		842DB1D016D69FDD00737D19 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 842DB1CF16D69FDD00737D19 /* main.m */; };
-		842DB1D416D69FDD00737D19 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 842DB1D216D69FDD00737D19 /* Credits.rtf */; };
 		842DB1D716D69FDD00737D19 /* CFIAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 842DB1D616D69FDD00737D19 /* CFIAppDelegate.m */; };
 		842DB1DA16D69FDD00737D19 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 842DB1D816D69FDD00737D19 /* MainMenu.xib */; };
 		842DB1EB16D6E7BA00737D19 /* CFIDictaphonicWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 842DB1EA16D6E7BA00737D19 /* CFIDictaphonicWindow.m */; };
@@ -23,12 +20,9 @@
 		842DB1C716D69FDD00737D19 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		842DB1C816D69FDD00737D19 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		842DB1CB16D69FDD00737D19 /* CFIDictaphonicsExample-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CFIDictaphonicsExample-Info.plist"; sourceTree = "<group>"; };
-		842DB1CD16D69FDD00737D19 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		842DB1CF16D69FDD00737D19 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		842DB1D116D69FDD00737D19 /* CFIDictaphonicsExample-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CFIDictaphonicsExample-Prefix.pch"; sourceTree = "<group>"; };
-		842DB1D316D69FDD00737D19 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		842DB1D516D69FDD00737D19 /* CFIAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CFIAppDelegate.h; sourceTree = "<group>"; };
-		842DB1D616D69FDD00737D19 /* CFIAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CFIAppDelegate.m; sourceTree = "<group>"; };
+		842DB1D516D69FDD00737D19 /* CFIAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CFIAppDelegate.h; path = CFIDictaphonicsExample/CFIAppDelegate.h; sourceTree = "<group>"; };
+		842DB1D616D69FDD00737D19 /* CFIAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CFIAppDelegate.m; path = CFIDictaphonicsExample/CFIAppDelegate.m; sourceTree = "<group>"; };
 		842DB1D916D69FDD00737D19 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		842DB1E916D6E7BA00737D19 /* CFIDictaphonicWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFIDictaphonicWindow.h; sourceTree = SOURCE_ROOT; };
 		842DB1EA16D6E7BA00737D19 /* CFIDictaphonicWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CFIDictaphonicWindow.m; sourceTree = SOURCE_ROOT; };
@@ -49,9 +43,12 @@
 		842DB1B716D69FDD00737D19 = {
 			isa = PBXGroup;
 			children = (
-				842DB1C916D69FDD00737D19 /* CFIDictaphonicsExample */,
-				842DB1C216D69FDD00737D19 /* Frameworks */,
-				842DB1C116D69FDD00737D19 /* Products */,
+				842DB1D516D69FDD00737D19 /* CFIAppDelegate.h */,
+				842DB1D616D69FDD00737D19 /* CFIAppDelegate.m */,
+				842DB1E916D6E7BA00737D19 /* CFIDictaphonicWindow.h */,
+				842DB1EA16D6E7BA00737D19 /* CFIDictaphonicWindow.m */,
+				842DB1D816D69FDD00737D19 /* MainMenu.xib */,
+				842DB1CA16D69FDD00737D19 /* Supporting Files */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,6 +58,7 @@
 				842DB1C016D69FDD00737D19 /* CFIDictaphonicsExample.app */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		842DB1C216D69FDD00737D19 /* Frameworks */ = {
@@ -70,6 +68,7 @@
 				842DB1C516D69FDD00737D19 /* Other Frameworks */,
 			);
 			name = Frameworks;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		842DB1C516D69FDD00737D19 /* Other Frameworks */ = {
@@ -82,29 +81,16 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		842DB1C916D69FDD00737D19 /* CFIDictaphonicsExample */ = {
-			isa = PBXGroup;
-			children = (
-				842DB1D516D69FDD00737D19 /* CFIAppDelegate.h */,
-				842DB1D616D69FDD00737D19 /* CFIAppDelegate.m */,
-				842DB1E916D6E7BA00737D19 /* CFIDictaphonicWindow.h */,
-				842DB1EA16D6E7BA00737D19 /* CFIDictaphonicWindow.m */,
-				842DB1D816D69FDD00737D19 /* MainMenu.xib */,
-				842DB1CA16D69FDD00737D19 /* Supporting Files */,
-			);
-			path = CFIDictaphonicsExample;
-			sourceTree = "<group>";
-		};
 		842DB1CA16D69FDD00737D19 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				842DB1C116D69FDD00737D19 /* Products */,
 				842DB1CB16D69FDD00737D19 /* CFIDictaphonicsExample-Info.plist */,
-				842DB1CC16D69FDD00737D19 /* InfoPlist.strings */,
-				842DB1CF16D69FDD00737D19 /* main.m */,
 				842DB1D116D69FDD00737D19 /* CFIDictaphonicsExample-Prefix.pch */,
-				842DB1D216D69FDD00737D19 /* Credits.rtf */,
+				842DB1C216D69FDD00737D19 /* Frameworks */,
 			);
 			name = "Supporting Files";
+			path = CFIDictaphonicsExample;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -159,8 +145,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				842DB1CE16D69FDD00737D19 /* InfoPlist.strings in Resources */,
-				842DB1D416D69FDD00737D19 /* Credits.rtf in Resources */,
 				842DB1DA16D69FDD00737D19 /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -172,7 +156,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				842DB1D016D69FDD00737D19 /* main.m in Sources */,
 				842DB1D716D69FDD00737D19 /* CFIAppDelegate.m in Sources */,
 				842DB1EB16D6E7BA00737D19 /* CFIDictaphonicWindow.m in Sources */,
 			);
@@ -181,28 +164,13 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		842DB1CC16D69FDD00737D19 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				842DB1CD16D69FDD00737D19 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		842DB1D216D69FDD00737D19 /* Credits.rtf */ = {
-			isa = PBXVariantGroup;
-			children = (
-				842DB1D316D69FDD00737D19 /* en */,
-			);
-			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
 		842DB1D816D69FDD00737D19 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				842DB1D916D69FDD00737D19 /* en */,
 			);
 			name = MainMenu.xib;
+			path = CFIDictaphonicsExample;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -274,7 +242,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CFIDictaphonicsExample/CFIDictaphonicsExample-Prefix.pch";
 				INFOPLIST_FILE = "CFIDictaphonicsExample/CFIDictaphonicsExample-Info.plist";
-				OTHER_LDFLAGS = "-all_load";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-framework",
+					QuartzCore,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -287,7 +259,11 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CFIDictaphonicsExample/CFIDictaphonicsExample-Prefix.pch";
 				INFOPLIST_FILE = "CFIDictaphonicsExample/CFIDictaphonicsExample-Info.plist";
-				OTHER_LDFLAGS = "-all_load";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-framework",
+					QuartzCore,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
