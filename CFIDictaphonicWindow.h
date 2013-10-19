@@ -1,8 +1,12 @@
+//
+//  CFIDictaphonicWindow.h
+//  CFIDictaphonicsExample
+//
+//  Created by Robert Widmann on 2/21/13.
+//  Copyright (c) 2013 CodaFi. All rights reserved.
+//
 
-//  CFIDictaphonicWindow.h  CFIDictaphonicsExample
-//  Created by Robert Widmann on 2/21/13.  Copyright (c) 2013 CodaFi. All rights reserved.
-
-typedef void(^CommandBlock)(NSString *command);
+typedef void(^CFICommandBlock)(NSString *command);
 /*!
  * Sent when the window can start dictation, which occurs when all known text fields have given
  * given up first responder status.  Attempting to activate dictation before this notification is
@@ -29,7 +33,7 @@ typedef void(^CommandBlock)(NSString *command);
 /*!
  * The map of command blocks to given commands.
  */
-@property (readonly) 		    NSMutableDictionary * commandMap;
+@property (readonly) 			NSMutableDictionary * commandMap;
 @property (assign) IBOutlet NSDictionaryController * commandMapController;
 /*!
  * Maps a command block to a given command.  Commands are lowercase'd before being added to the 
@@ -37,12 +41,10 @@ typedef void(^CommandBlock)(NSString *command);
  * @param commandBlock The block that will be invoked when the given command has been recognized.
  * @param command The command associated with the given command block.
  */
-- (void)enqueueBlock:(CommandBlock)comBlk forCommand:(NSString*)com description:(NSString*)d;
+- (void)enqueueBlock:(CFICommandBlock)comBlk forCommand:(NSString*)com description:(NSString*)d;
 /*!
  * Forces the window to activate dictation by resigning all first responders.
  */
 - (void)forceDictation;
 
 @end
-
-

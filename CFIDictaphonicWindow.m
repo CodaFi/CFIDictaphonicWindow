@@ -1,6 +1,10 @@
-
-//  CFIDictaphonicWindow.m    CFIDictaphonicsExample
-//  Created by Robert Widmann on 2/21/13.  Copyright (c) 2013 CodaFi. All rights reserved.
+//
+//  CFIDictaphonicWindow.m
+//  CFIDictaphonicsExample
+//
+//  Created by Robert Widmann on 2/21/13.
+//  Copyright (c) 2013 CodaFi. All rights reserved.
+//
 
 #import "CFIDictaphonicWindow.h"
 
@@ -12,7 +16,7 @@
 
 @implementation CFIDictationField
 
--   (id) initWithFrame:(NSRect)frame	{    if (self != [super initWithFrame:frame]) return nil;
+-	 (id) initWithFrame:(NSRect)frame	{	if (self != [super initWithFrame:frame]) return nil;
 	_inputContext 							= [NSTextInputContext.alloc initWithClient:self];
 	_inputContext.acceptsGlyphInfo 	= NO;
 	return self;
@@ -25,26 +29,26 @@
 																	  object:self userInfo:@{@"Command" : aString}];
 }
 - (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)p  actualRange:(NSRangePointer)a 		{ return nil; }
-- (void) setMarkedText:(id)txt 			      selectedRange:(NSRange)selR replacementRange:(NSRange)repR 	{	return; }
+- (void) setMarkedText:(id)txt 				  selectedRange:(NSRange)selR replacementRange:(NSRange)repR 	{	return; }
 - (void) unmarkText 				{ return; 							}
 - (BOOL) hasMarkedText 			{ return NO; 						}
--    (NSRange) markedRange 	{ return NSMakeRange(0, 0); 	}
--    (NSRange) selectedRange 	{ return NSMakeRange(0, 0);   }
--     (NSRect) firstRectForCharacterRange:	(NSRange)theRange actualRange:(NSRangePointer)actualRange{
+-	(NSRange) markedRange 		{ return NSMakeRange(0, 0); 	}
+-	(NSRange) selectedRange 	{ return NSMakeRange(0, 0);	}
+-	 (NSRect) firstRectForCharacterRange:	(NSRange)theRange actualRange:(NSRangePointer)actualRange{
 
 	NSRect rect = [self convertRect:NSZeroRect toView:nil];
 	rect.origin = [self.window convertBaseToScreen:rect.origin];
 	return rect;
 }
-- (NSUInteger) characterIndexForPoint:			(NSPoint)thePoint { 	return 0; }
--   (NSArray*) validAttributesForMarkedText 	{ 	return @[]; }
+- (NSUInteger) characterIndexForPoint:		(NSPoint)thePoint { 	return 0; }
+-	(NSArray*) validAttributesForMarkedText	{ 	return @[]; }
 
-- (void) keyDown:			(NSEvent*)e {	NSLog(@"%lu", (unsigned long)e.modifierFlags); 	//Do nothing, only inputs should be from Dictation
-}
+- (void) keyDown:			(NSEvent*)e {	NSLog(@"%lu", (unsigned long)e.modifierFlags); 	/* Do nothing, only inputs should be from Dictation*/ }
 - (void) mouseDown:		(NSEvent*)e { [self.inputContext handleEvent:e]; }
 - (void) mouseDragged:	(NSEvent*)e { [self.inputContext handleEvent:e]; }
 - (void) mouseUp:			(NSEvent*)e { [self.inputContext handleEvent:e]; }
-- (void) drawRect:(NSRect)dirtyRect { [NSColor.purpleColor set]; NSRectFill(dirtyRect); }
+- (void) drawRect:(NSRect)dirtyRect {  											 }
+
 @end
 
 @interface CFIDictaphonicWindow ()
@@ -83,12 +87,12 @@
 }
 - (void) awakeFromNib 	{
 
-	CGFloat titleHeight 	=  [self.contentView superview].frame.size.height - [self.contentView frame].size.height;	
-	NSRect dRect 			= (NSRect){NSWidth(self.frame)-10, NSHeight([self.contentView frame]), 10, titleHeight };
+	CGFloat titleHeight = [self.contentView superview].frame.size.height - [self.contentView frame].size.height;	
+	NSRect 		  dRect = (NSRect){NSWidth(self.frame) - 10, NSHeight([self.contentView frame]), 10, titleHeight};
 
-	[[self.contentView superview] addSubview:_dummyField 	= [CFIDictationField.alloc initWithFrame:dRect]];
-	_dummyField.refusesFirstResponder 	= YES;
-	_dummyField.autoresizingMask 			= NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin;
+	[[self.contentView superview]addSubview:_dummyField = [CFIDictationField.alloc initWithFrame:dRect]];
+	_dummyField.refusesFirstResponder = YES;
+	_dummyField.autoresizingMask 		 = NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin;
 	
 	[NSNotificationCenter.defaultCenter addObserverForName:CFIDictaphonicTextDidChange 		  object:self.dummyField 
 																	 queue:NSOperationQueue.currentQueue usingBlock:^(NSNotification *note) {
@@ -129,7 +133,7 @@
 
 #pragma mark - Command Handling
 
-- (void) handleCommand:(NSString*)command {  CommandBlock commandBlock; 
+- (void) handleCommand:(NSString*)command {  CFICommandBlock commandBlock; 
 
 	BOOL yeaNea = (commandBlock = _commandMap[command.lowercaseString][@"command"]) != nil;
 
@@ -144,7 +148,7 @@
 																	  object:self 
 																  userInfo: @{@"Command" : command.lowercaseString}];
 }
-- (void) enqueueBlock: (CommandBlock)comBlk forCommand:(NSString*)com description:(NSString*)d {
+- (void) enqueueBlock: (CFICommandBlock)comBlk forCommand:(NSString*)com description:(NSString*)d {
 
 	NSParameterAssert(com);
 	id newObject = _commandMapController.newObject;
