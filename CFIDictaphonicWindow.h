@@ -4,6 +4,7 @@
 //
 //  Created by Robert Widmann on 2/21/13.
 //  Copyright (c) 2013 CodaFi. All rights reserved.
+//  Released under the MIT license.
 //
 
 #import <Cocoa/Cocoa.h>
@@ -53,6 +54,6 @@ extern NSString *const CFIDictaphonicWindowDidNotRecognizeCommand;
 /*!
  * Forces the window to activate dictation by resigning all first responders.
  */
-- (void)forceDictation;
+- (void)startDictation;
 
 @end

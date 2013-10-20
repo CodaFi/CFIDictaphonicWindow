@@ -4,9 +4,11 @@
 //
 //  Created by Robert Widmann on 2/21/13.
 //  Copyright (c) 2013 CodaFi. All rights reserved.
+//  Released under the MIT license.
 //
 
 #import "CFIDictaphonicWindow.h"
+#include <objc/runtime.h>
 
 #define START_BITMASK_SWITCH(x) \
 for (uint64_t bit = 1; x >= bit; bit *= 2) if (x & bit) switch (bit)
@@ -17,59 +19,51 @@ NSString *const CFIDictaphonicWindowDidRecognizeCommand = @"CFIDictaphonicWindow
 NSString *const CFIDictaphonicWindowDidNotRecognizeCommand = @"CFIDictaphonicWindowDidNotRecognizeCommand";
 NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 
+static NSString *const CFIDictaphonicCommandKey = @"CFIDictaphonicCommandKey";
+static Class CFIDictaphonicFieldClass = Nil;
+
 @interface CFIDictationField : NSControl <NSTextInputClient>
 @property (nonatomic, strong) NSTextInputContext *inputContext;
 @end
 
-@implementation CFIDictationField {
+@implementation CFIDictationField
+
+#pragma mark - Lifecycle
+
+- (id)initWithFrame:(NSRect)frame {
+	self = [super initWithFrame:frame];
+
+	_inputContext = [[NSTextInputContext alloc] initWithClient:self];
+	_inputContext.acceptsGlyphInfo = NO;
+	
+	return self;
 }
 
-- (id)initWithFrame:(NSRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code here.
-		self.inputContext = [[NSTextInputContext alloc] initWithClient:self];
-        self.inputContext.acceptsGlyphInfo = NO;
-    }
-    
-    return self;
-}
+#pragma mark - Text Attributes
 
-- (void)insertText:(id)aString replacementRange:(NSRange)replacementRange {
-	[[NSNotificationCenter defaultCenter]postNotificationName:CFIDictaphonicTextDidChange object:self userInfo:@{@"Command" : aString}];
-}
-
-- (NSAttributedString*)attributedSubstringForProposedRange:(NSRange)aRange actualRange:(NSRangePointer)actualRange {
+- (NSAttributedString *)attributedSubstringForProposedRange:(NSRange)aRange actualRange:(NSRangePointer)actualRange {
 	return nil;
 }
 
-- (void) doCommandBySelector:(SEL)aSelector {
-    [super doCommandBySelector:aSelector]; // NSResponder's implementation will do nicely
-}
+- (void)setMarkedText:(id)aString selectedRange:(NSRange)selectedRange replacementRange:(NSRange)replacementRange { }
 
-- (void)setMarkedText:(id)aString selectedRange:(NSRange)selectedRange replacementRange:(NSRange)replacementRange {
-	return;
-}
-
-- (void) unmarkText {
-	return;
-}
+- (void) unmarkText { }
 
 - (BOOL) hasMarkedText {
 	return NO;
 }
-- (NSRange) markedRange {
+
+- (NSRange)markedRange {
 	return NSMakeRange(0, 0);
 }
 
-- (NSRange) selectedRange {
+- (NSRange)selectedRange {
 	return NSMakeRange(0, 0);
 }
 
-- (NSRect) firstRectForCharacterRange:(NSRange)theRange actualRange:(NSRangePointer)actualRange{
+- (NSRect)firstRectForCharacterRange:(NSRange)theRange actualRange:(NSRangePointer)actualRange{
 	NSRect rect = [self convertRect:NSZeroRect toView:nil];
-	rect.origin = [[self window] convertBaseToScreen:rect.origin];
+	rect.origin = [self.window convertBaseToScreen:rect.origin];
 	return rect;
 }
 
@@ -77,15 +71,18 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 	return 0;
 }
 
-- (NSArray*) validAttributesForMarkedText {
+- (NSArray *) validAttributesForMarkedText {
 	return @[];
 }
 
-- (void)keyDown:(NSEvent *)theEvent {
-	//Do nothing, only inputs should be from Dictation
-	NSLog(@"%lu", (unsigned long)theEvent.modifierFlags);
+#pragma mark - Event Handling
+
+- (void)insertText:(id)aString replacementRange:(NSRange)replacementRange {
+	[NSNotificationCenter.defaultCenter postNotificationName:CFIDictaphonicTextDidChange object:self userInfo:@{ CFIDictaphonicCommandKey : aString }];
 }
 
+//Do nothing, only inputs should be from Dictation
+- (void)keyDown:(NSEvent *)theEvent { }
 
 - (void)mouseDown:(NSEvent *)theEvent {
 	[self.inputContext handleEvent:theEvent];
@@ -99,8 +96,9 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 	[self.inputContext handleEvent:theEvent];
 }
 
+#pragma mark - Drawing
 
-- (void)drawRect:(NSRect)dirtyRect {}
+- (void)drawRect:(NSRect)dirtyRect { }
 
 @end
 
@@ -115,102 +113,107 @@ NSString *const CFIDictaphonicTextDidChange = @"CFIDictaphonicTextDidChange";
 
 - (id)init {
 	self = [super init];
-	self.commandMap = @{}.mutableCopy;
-	[self awakeFromNib];
-	return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder {
-	self = [super initWithCoder:aDecoder];
-	self.commandMap = @{}.mutableCopy;
+	
+	CFIDictaphonicWindowCommonInit(self);
+	
 	return self;
 }
 
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag {
 	self = [super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag];
-	self.commandMap = @{}.mutableCopy;
-	[self awakeFromNib];
+
+	CFIDictaphonicWindowCommonInit(self);
+
 	return self;
 }
 
 - (id)initWithContentRect:(NSRect)contentRect styleMask:(NSUInteger)aStyle backing:(NSBackingStoreType)bufferingType defer:(BOOL)flag screen:(NSScreen *)screen {
 	self = [super initWithContentRect:contentRect styleMask:aStyle backing:bufferingType defer:flag screen:screen];
-	self.commandMap = @{}.mutableCopy;
-	[self awakeFromNib];
+
+	CFIDictaphonicWindowCommonInit(self);
+
 	return self;
 }
 
-- (void) awakeFromNib {
-	self.dummyField = [[CFIDictationField alloc] initWithFrame:NSMakeRect(NSWidth(self.frame)/2, NSHeight([self.contentView frame]), 10, [self titleBarHeight])];
-	self.dummyField.refusesFirstResponder = YES;
-	[self.dummyField setAutoresizingMask:(NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin)];
-	[[[self contentView] superview] addSubview:self.dummyField];
-	
-	[[NSNotificationCenter defaultCenter] addObserverForName:CFIDictaphonicTextDidChange object:self.dummyField queue:[NSOperationQueue currentQueue] usingBlock: ^(NSNotification *note) {
-		[self handleCommand:note.userInfo[@"Command"]];
-	}];
+- (void)awakeFromNib {
+	CFIDictaphonicWindowCommonInit(self);
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter]removeObserver:self];
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+}
+
+static void CFIDictaphonicWindowCommonInit(CFIDictaphonicWindow *self){
+	self->_commandMap = @{}.mutableCopy;
+	self->_dummyField = [[CFIDictationField alloc] initWithFrame:NSMakeRect(NSWidth(self.frame)/2, NSHeight([self.contentView frame]), 10, CFIDictaphonicWindowTitleBarHeight(self))];
+	self->_dummyField.refusesFirstResponder = YES;
+	self->_dummyField.autoresizingMask = NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin;
+	[[[self contentView] superview] addSubview:self.dummyField];
+	
+	if (CFIDictaphonicFieldClass == Nil) {
+		CFIDictaphonicFieldClass = object_getClass(self->_dummyField);
+	}
+	
+	[NSNotificationCenter.defaultCenter addObserverForName:CFIDictaphonicTextDidChange object:self.dummyField queue:nil usingBlock: ^(NSNotification *note) {
+		[self handleCommand:note.userInfo[CFIDictaphonicCommandKey]];
+	}];
 }
 
 #pragma mark - NSResponder Intercepting
 
-- (BOOL) makeFirstResponder:(NSResponder *)aResponder {
+- (BOOL)makeFirstResponder:(NSResponder *)aResponder {
 	[self delayedCheckResponders];
 	return [super makeFirstResponder:aResponder];
 }
 
-- (void) delayedCheckResponders {
+- (void)delayedCheckResponders {
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(checkResponders) object:nil];
 	[self performSelector:@selector(checkResponders) withObject:nil afterDelay:0];
 }
 
-- (void) checkResponders {
-	if ([self.firstResponder isKindOfClass:[self class]]) {
+- (void)checkResponders {
+	if (self.firstResponder == self) {
 		self.dummyField.refusesFirstResponder = NO;
 		[self makeFirstResponder:self.dummyField];
-	} else if ([self.firstResponder isKindOfClass:[self.dummyField class]]) {
-		[[NSNotificationCenter defaultCenter]postNotificationName:CFIDictaphonicWindowCanStartDictation object:self];
+	} else if ([self.firstResponder isKindOfClass:CFIDictaphonicFieldClass]) {
+		[NSNotificationCenter.defaultCenter postNotificationName:CFIDictaphonicWindowCanStartDictation object:self];
 	}
 	else {
 		self.dummyField.refusesFirstResponder = YES;
-		[[NSNotificationCenter defaultCenter]postNotificationName:CFIDictaphonicWindowDidMakeDictationFieldResign object:self];
+		[NSNotificationCenter.defaultCenter postNotificationName:CFIDictaphonicWindowDidMakeDictationFieldResign object:self];
 	}
 }
 
 #pragma mark - Command Handling
 
-- (void) handleCommand:(NSString*)command {
+- (void)handleCommand:(NSString*)command {
 	void (^commandBlock)(NSString *commandStr) = [self.commandMap objectForKey:command.lowercaseString];
 	if (commandBlock != nil) {
 		commandBlock(command);
-		[[NSNotificationCenter defaultCenter]postNotificationName:CFIDictaphonicWindowDidRecognizeCommand object:self userInfo:@{@"Command" : command.lowercaseString}];
+		[NSNotificationCenter.defaultCenter postNotificationName:CFIDictaphonicWindowDidRecognizeCommand object:self userInfo:@{ CFIDictaphonicCommandKey : command.lowercaseString }];
 	} else {
-		[[NSNotificationCenter defaultCenter]postNotificationName:CFIDictaphonicWindowDidNotRecognizeCommand object:self userInfo:@{@"Command" : command.lowercaseString}];
+		[NSNotificationCenter.defaultCenter postNotificationName:CFIDictaphonicWindowDidNotRecognizeCommand object:self userInfo:@{ CFIDictaphonicCommandKey : command.lowercaseString }];
 	}
 }
 
-- (void)enqueueBlock:(void(^)(NSString *command))commandBlock forCommand:(NSString*)command {
+- (void)enqueueBlock:(void(^)(NSString *command))commandBlock forCommand:(NSString *)command {
 	NSParameterAssert(command);
-	[self.commandMap setObject:[commandBlock copy] forKey:command.lowercaseString];
+	NSParameterAssert(commandBlock);
+
+	self.commandMap[command.lowercaseString] = [commandBlock copy];
 }
 
-#pragma mark - UI
+- (void)startDictation {
+	[self makeFirstResponder:nil];
+	[NSApp performSelector:@selector(startDictation:) withObject:self.dummyField afterDelay:0.2];
+}
 
-- (CGFloat)titleBarHeight
-{
+#pragma mark - Private
+
+static inline CGFloat CFIDictaphonicWindowTitleBarHeight(CFIDictaphonicWindow *self) {
 	NSRect outerFrame = [[[self contentView] superview] frame];
 	NSRect innerFrame = [[self contentView] frame];
-	
 	return outerFrame.size.height - innerFrame.size.height;
 }
-
-- (void)forceDictation {
-	[self makeFirstResponder:nil];
-	[NSApp  performSelector:@selector(startDictation:) withObject:self.dummyField afterDelay:0.2];
-}
-
 
 @end
