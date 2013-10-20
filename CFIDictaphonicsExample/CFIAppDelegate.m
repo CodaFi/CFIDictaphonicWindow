@@ -4,6 +4,7 @@
 //
 //  Created by Robert Widmann on 2/21/13.
 //  Copyright (c) 2013 CodaFi. All rights reserved.
+//  Released under the MIT license.
 //
 
 #import "CFIAppDelegate.h"
@@ -43,7 +44,7 @@
 
 -(IBAction)resignResponders:(id)sender {
 	[self.window makeFirstResponder:nil];
-	[self.window forceDictation];
+	[self.window startDictation];
 }
 
 - (void)doTextyStuff:(NSString*)command {
